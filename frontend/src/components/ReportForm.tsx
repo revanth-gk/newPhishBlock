@@ -125,9 +125,14 @@ export function ReportForm() {
         evidence: '',
       });
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting report:', error);
-      setSubmitError('Failed to submit report. Please try again.');
+      // Provide more detailed error information
+      if (error.message) {
+        setSubmitError(`Failed to submit report: ${error.message}`);
+      } else {
+        setSubmitError('Failed to submit report. Please try again. Check browser console for details.');
+      }
     } finally {
       setIsSubmitting(false);
     }

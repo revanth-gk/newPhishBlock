@@ -9,24 +9,45 @@ export class IPFSClient {
   }
 
   async uploadJSON(data: any): Promise<string> {
-    // In a real implementation, this would upload to IPFS
-    // For now, we'll return a mock CID
-    console.log('Uploading to IPFS:', data);
-    return 'QmMockCID1234567890abcdefghijklmnopqrstuvwxyz';
+    try {
+      // In a real implementation, this would upload to IPFS
+      // For now, we'll return a mock CID
+      console.log('Uploading to IPFS:', data);
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return 'QmMockCID1234567890abcdefghijklmnopqrstuvwxyz';
+    } catch (error: any) {
+      console.error('Error uploading to IPFS:', error);
+      throw new Error(`Failed to upload to IPFS: ${error.message || 'Unknown error'}`);
+    }
   }
 
   async uploadFile(file: File): Promise<string> {
-    // In a real implementation, this would upload to IPFS
-    // For now, we'll return a mock CID
-    console.log('Uploading file to IPFS:', file.name);
-    return 'QmMockFileCID1234567890abcdefghijklmnopqrstuvwxyz';
+    try {
+      // In a real implementation, this would upload to IPFS
+      // For now, we'll return a mock CID
+      console.log('Uploading file to IPFS:', file.name);
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return 'QmMockFileCID1234567890abcdefghijklmnopqrstuvwxyz';
+    } catch (error: any) {
+      console.error('Error uploading file to IPFS:', error);
+      throw new Error(`Failed to upload file to IPFS: ${error.message || 'Unknown error'}`);
+    }
   }
 
   async pin(cid: string): Promise<boolean> {
-    // In a real implementation, this would pin the CID
-    // For now, we'll just return true
-    console.log('Pinning CID:', cid);
-    return true;
+    try {
+      // In a real implementation, this would pin the CID
+      // For now, we'll just return true
+      console.log('Pinning CID:', cid);
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return true;
+    } catch (error: any) {
+      console.error('Error pinning CID:', error);
+      throw new Error(`Failed to pin CID: ${error.message || 'Unknown error'}`);
+    }
   }
 }
 
