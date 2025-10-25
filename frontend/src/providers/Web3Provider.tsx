@@ -5,13 +5,12 @@ import { mainnet, sepolia } from 'wagmi/chains';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
 
-// Create wagmi config
-const config = createConfig({
+// Create wagmi config with a demo project ID
+const config = getDefaultConfig({
+  appName: 'PhishBlock',
+  projectId: 'YOUR_PROJECT_ID_HERE', // In production, replace with your actual WalletConnect project ID
   chains: [mainnet, sepolia],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-  },
+  ssr: true,
 });
 
 // Create query client
