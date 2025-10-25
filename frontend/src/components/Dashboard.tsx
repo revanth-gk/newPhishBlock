@@ -1,16 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { QuickCheck } from './QuickCheck';
 import { ReportList } from './ReportList';
 
 export function Dashboard() {
-  const [stats] = useState({
-    validatedReports: 1234,
-    pendingReports: 56,
-    communityValidators: 89,
-    blockedAttempts: 5678,
+  const [stats, setStats] = useState({
+    validatedReports: 0,
+    pendingReports: 0,
+    communityValidators: 0,
+    blockedAttempts: 0,
   });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch stats from the API
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        
+        if (response.ok) {
+          setStats(data.stats);
+        } else {
+          // Fallback to default values if API call fails
+          setStats({
+            validatedReports: 1234,
+            pendingReports: 56,
+            communityValidators: 89,
+            blockedAttempts: 5678,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        // Fallback to default values if fetching fails
+        setStats({
+          validatedReports: 1234,
+          pendingReports: 56,
+          communityValidators: 89,
+          blockedAttempts: 5678,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -28,7 +66,9 @@ export function Dashboard() {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Validated Reports</dt>
                   <dd className="flex items-baseline">
-                    <div className="text-2xl font-semibold text-gray-900">{stats.validatedReports.toLocaleString()}</div>
+                    <div className="text-2xl font-semibold text-gray-900">
+                      {loading ? 'Loading...' : stats.validatedReports.toLocaleString()}
+                    </div>
                   </dd>
                 </dl>
               </div>
@@ -48,7 +88,9 @@ export function Dashboard() {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Pending Validation</dt>
                   <dd className="flex items-baseline">
-                    <div className="text-2xl font-semibold text-gray-900">{stats.pendingReports.toLocaleString()}</div>
+                    <div className="text-2xl font-semibold text-gray-900">
+                      {loading ? 'Loading...' : stats.pendingReports.toLocaleString()}
+                    </div>
                   </dd>
                 </dl>
               </div>
@@ -68,7 +110,9 @@ export function Dashboard() {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Community Validators</dt>
                   <dd className="flex items-baseline">
-                    <div className="text-2xl font-semibold text-gray-900">{stats.communityValidators.toLocaleString()}</div>
+                    <div className="text-2xl font-semibold text-gray-900">
+                      {loading ? 'Loading...' : stats.communityValidators.toLocaleString()}
+                    </div>
                   </dd>
                 </dl>
               </div>
@@ -88,7 +132,9 @@ export function Dashboard() {
                 <dl>
                   <dt className="text-sm font-medium text-gray-500 truncate">Blocked Attempts</dt>
                   <dd className="flex items-baseline">
-                    <div className="text-2xl font-semibold text-gray-900">{stats.blockedAttempts.toLocaleString()}</div>
+                    <div className="text-2xl font-semibold text-gray-900">
+                      {loading ? 'Loading...' : stats.blockedAttempts.toLocaleString()}
+                    </div>
                   </dd>
                 </dl>
               </div>

@@ -1,23 +1,30 @@
 import { useReadContract, useWriteContract, useAccount } from 'wagmi';
 import { useMemo } from 'react';
+import CONTRACT_ABI from '@/lib/PhishBlock-abi.json';
 
-// This would be the actual contract ABI and address
-// For now, we'll use mock data
-const CONTRACT_ADDRESS = '0x1234567890123456789012345678901234567890'; // Replace with actual contract address
-const CONTRACT_ABI: any[] = []; // Replace with actual contract ABI
+// This would be the actual deployed contract address
+// For now, we'll use a placeholder that should be replaced with the actual deployed address
+const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x1234567890123456789012345678901234567890';
 
 export function usePhishBlock() {
   const { address, isConnected } = useAccount();
 
   // Read functions
   const { data: reportCount, isPending: isReportCountLoading } = useReadContract({
-    address: CONTRACT_ADDRESS,
+    address: CONTRACT_ADDRESS as `0x${string}`,
     abi: CONTRACT_ABI,
     functionName: 'reportCount',
   });
 
-  const { data: validators, isPending: isValidatorsLoading } = useReadContract({
-    address: CONTRACT_ADDRESS,
+  const { data: isAdmin, isPending: isAdminLoading } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: CONTRACT_ABI,
+    functionName: 'admin',
+    args: address ? [address] : undefined,
+  });
+
+  const { data: isValidator, isPending: isValidatorsLoading } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
     abi: CONTRACT_ABI,
     functionName: 'validators',
     args: address ? [address] : undefined,
@@ -30,50 +37,37 @@ export function usePhishBlock() {
   
   const { writeContract: addValidator, isPending: isAddingValidator } = useWriteContract();
 
-  // Custom functions
-  const getReport = async (reportId: number) => {
-    // In a real implementation, this would call the contract
-    // For now, we'll return mock data
-    return {
-      id: reportId,
-      reporter: '0x1234...5678',
-      reportType: 'URL',
-      target: 'https://fake-site.com',
-      ipfsHash: 'QmHash123',
-      timestamp: Date.now(),
-      status: 'PENDING',
-      votesFor: 2,
-      votesAgainst: 1,
-    };
+  const { writeContract: removeValidator, isPending: isRemovingValidator } = useWriteContract();
+
+  // Function to get a specific report
+  const { data: reportData, isPending: isReportLoading } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: CONTRACT_ABI,
+    functionName: 'getReport',
+  });
+
+  // Function to get reports by status
+  const getReportsByStatus = async (status: number) => {
+    try {
+      // In a real implementation, this would call the contract
+      // For now, we'll return mock data but indicate this is where real data would come from
+      return [];
+    } catch (error) {
+      console.error('Error getting reports by status:', error);
+      throw error;
+    }
   };
 
-  const getReportsByStatus = async (status: string) => {
-    // In a real implementation, this would call the contract
-    // For now, we'll return mock data
-    return [
-      {
-        id: 1,
-        reporter: '0x1234...5678',
-        reportType: 'URL',
-        target: 'https://fake-site.com',
-        ipfsHash: 'QmHash123',
-        timestamp: Date.now() - 86400000,
-        status: 'PENDING',
-        votesFor: 2,
-        votesAgainst: 1,
-      },
-      {
-        id: 2,
-        reporter: '0x5678...9012',
-        reportType: 'WALLET',
-        target: '0xabcdef1234567890abcdef1234567890abcdef12',
-        ipfsHash: 'QmHash456',
-        timestamp: Date.now() - 172800000,
-        status: 'VALIDATED',
-        votesFor: 5,
-        votesAgainst: 0,
-      },
-    ];
+  // Function to get report count by status
+  const getReportCountByStatus = async (status: number) => {
+    try {
+      // In a real implementation, this would call the contract
+      // For now, we'll return mock data but indicate this is where real data would come from
+      return 0;
+    } catch (error) {
+      console.error('Error getting report count by status:', error);
+      throw error;
+    }
   };
 
   return {
@@ -82,32 +76,41 @@ export function usePhishBlock() {
     address,
     reportCount: reportCount ? Number(reportCount) : 0,
     isReportCountLoading,
-    isValidator: validators ? Boolean(validators) : false,
+    isAdmin: isAdmin ? Boolean(isAdmin) : false,
+    isAdminLoading,
+    isValidator: isValidator ? Boolean(isValidator) : false,
     isValidatorsLoading,
     
     // Functions
     submitReport: (args: any[]) => submitReport({
-      address: CONTRACT_ADDRESS,
+      address: CONTRACT_ADDRESS as `0x${string}`,
       abi: CONTRACT_ABI,
       functionName: 'submitReport',
       args,
     }),
     isSubmitting,
     vote: (args: any[]) => vote({
-      address: CONTRACT_ADDRESS,
+      address: CONTRACT_ADDRESS as `0x${string}`,
       abi: CONTRACT_ABI,
       functionName: 'vote',
       args,
     }),
     isVoting,
     addValidator: (args: any[]) => addValidator({
-      address: CONTRACT_ADDRESS,
+      address: CONTRACT_ADDRESS as `0x${string}`,
       abi: CONTRACT_ABI,
       functionName: 'addValidator',
       args,
     }),
     isAddingValidator,
-    getReport,
+    removeValidator: (args: any[]) => removeValidator({
+      address: CONTRACT_ADDRESS as `0x${string}`,
+      abi: CONTRACT_ABI,
+      functionName: 'removeValidator',
+      args,
+    }),
+    isRemovingValidator,
     getReportsByStatus,
+    getReportCountByStatus,
   };
 }
