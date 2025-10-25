@@ -14,6 +14,7 @@ PhishBlock is a decentralized database system for community-reported phishing UR
 - **Web3 Authentication**: Complete MetaMask authentication flow
 - **IPFS Storage**: Decentralized storage for detailed report data
 - **Responsive Design**: Mobile-friendly interface
+- **Enhanced Security**: Multiple security measures implemented
 
 ## Technology Stack
 
@@ -130,6 +131,25 @@ npx hardhat test
 cd smart-contracts
 npx hardhat run scripts/deploy.js --network sepolia
 ```
+
+## Security Features
+
+### Smart Contract Security
+- Emergency pause functionality
+- Input validation for report types, targets, and IPFS hashes
+- Access controls for validators and admins
+- Reentrancy protection through function modifiers
+
+### Frontend Security
+- Client-side input validation
+- Rate limiting on API endpoints
+- XSS protection through input sanitization
+- Secure HTTP headers
+
+### Database Security
+- Row Level Security (RLS) policies
+- Data sanitization
+- Rate limiting on queries
 
 ## Contributing
 

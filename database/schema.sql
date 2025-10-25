@@ -59,6 +59,9 @@ CREATE POLICY "Users can view their own reports" ON reports
 CREATE POLICY "Authenticated users can insert reports" ON reports
   FOR INSERT WITH CHECK (auth.jwt() ->> 'wallet_address' IS NOT NULL);
 
+CREATE POLICY "Users can update their own reports" ON reports
+  FOR UPDATE USING (reporter_address = auth.jwt() ->> 'wallet_address');
+
 -- Create policies for validators
 CREATE POLICY "Anyone can view validators" ON validators
   FOR SELECT USING (true);
@@ -73,6 +76,9 @@ CREATE POLICY "Users can view votes" ON votes
 CREATE POLICY "Authenticated users can insert votes" ON votes
   FOR INSERT WITH CHECK (auth.jwt() ->> 'wallet_address' IS NOT NULL);
 
+CREATE POLICY "Users can update their own votes" ON votes
+  FOR UPDATE USING (voter_address = auth.jwt() ->> 'wallet_address');
+
 -- Create functions for updating timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -85,3 +91,9 @@ $$ language 'plpgsql';
 -- Create triggers for updating timestamps
 CREATE TRIGGER update_reports_updated_at BEFORE UPDATE
   ON reports FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_validators_updated_at BEFORE UPDATE
+  ON validators FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_votes_updated_at BEFORE UPDATE
+  ON votes FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

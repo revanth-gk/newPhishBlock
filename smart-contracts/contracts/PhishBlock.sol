@@ -25,11 +25,15 @@ contract PhishBlock {
     uint256 public constant VALIDATION_THRESHOLD = 3;
     uint256 public constant VOTING_PERIOD = 7 days;
     
+    // Emergency pause functionality
+    bool public paused = false;
+    
     event ReportSubmitted(uint256 indexed reportId, address indexed reporter, string target);
     event VoteCast(uint256 indexed reportId, address indexed voter, bool support);
     event ReportValidated(uint256 indexed reportId, ReportStatus status);
     event ValidatorAdded(address indexed validator);
     event ValidatorRemoved(address indexed validator);
+    event PausedStateChanged(bool paused);
     
     modifier onlyValidator() {
         require(validators[msg.sender] || admin[msg.sender], "Not a validator");
@@ -41,15 +45,27 @@ contract PhishBlock {
         _;
     }
     
+    // Emergency pause modifier
+    modifier whenNotPaused() {
+        require(!paused, "Contract is paused");
+        _;
+    }
+    
     constructor() {
         admin[msg.sender] = true;
+    }
+    
+    // Emergency pause function
+    function setPaused(bool _paused) external onlyAdmin {
+        paused = _paused;
+        emit PausedStateChanged(_paused);
     }
     
     function submitReport(
         string memory _reportType,
         string memory _target,
         string memory _ipfsHash
-    ) external returns (uint256) {
+    ) external whenNotPaused returns (uint256) {
         require(bytes(_reportType).length > 0, "Report type cannot be empty");
         require(bytes(_target).length > 0, "Target cannot be empty");
         require(
@@ -57,6 +73,26 @@ contract PhishBlock {
             keccak256(abi.encodePacked(_reportType)) == keccak256(abi.encodePacked("WALLET")),
             "Invalid report type"
         );
+        
+        // Additional validation for URL format
+        if (keccak256(abi.encodePacked(_reportType)) == keccak256(abi.encodePacked("URL"))) {
+            require(bytes(_target).length > 4, "URL too short");
+            require(
+                keccak256(abi.encodePacked(_target[0], _target[1], _target[2], _target[3])) == keccak256(abi.encodePacked("h", "t", "t", "p")) ||
+                keccak256(abi.encodePacked(_target[0], _target[1], _target[2], _target[3], _target[4])) == keccak256(abi.encodePacked("h", "t", "t", "p", "s")),
+                "Invalid URL format"
+            );
+        }
+        
+        // Additional validation for wallet address format
+        if (keccak256(abi.encodePacked(_reportType)) == keccak256(abi.encodePacked("WALLET"))) {
+            require(bytes(_target).length == 42, "Invalid wallet address length");
+            require(_target[0] == "0" && _target[1] == "x", "Invalid wallet address format");
+        }
+        
+        // Validate IPFS hash format (should start with Qm and be of appropriate length)
+        require(bytes(_ipfsHash).length > 40 && bytes(_ipfsHash).length < 50, "Invalid IPFS hash length");
+        require(_ipfsHash[0] == "Q" && _ipfsHash[1] == "m", "Invalid IPFS hash format");
         
         reportCount++;
         
@@ -76,7 +112,7 @@ contract PhishBlock {
         return reportCount;
     }
     
-    function vote(uint256 _reportId, bool _support) external onlyValidator {
+    function vote(uint256 _reportId, bool _support) external whenNotPaused onlyValidator {
         require(_reportId > 0 && _reportId <= reportCount, "Invalid report ID");
         require(!hasVoted[_reportId][msg.sender], "Already voted");
         require(reports[_reportId].status == ReportStatus.PENDING, "Voting closed");
@@ -102,13 +138,13 @@ contract PhishBlock {
         }
     }
     
-    function addValidator(address _validator) external onlyAdmin {
+    function addValidator(address _validator) external whenNotPaused onlyAdmin {
         require(_validator != address(0), "Invalid address");
         validators[_validator] = true;
         emit ValidatorAdded(_validator);
     }
     
-    function removeValidator(address _validator) external onlyAdmin {
+    function removeValidator(address _validator) external whenNotPaused onlyAdmin {
         require(_validator != address(0), "Invalid address");
         validators[_validator] = false;
         emit ValidatorRemoved(_validator);

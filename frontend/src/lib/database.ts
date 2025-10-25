@@ -1,4 +1,5 @@
 import { getSupabaseClient } from '@/lib/supabase';
+import { sanitizeInput } from '@/lib/security';
 
 export interface Report {
   id: number;
@@ -18,17 +19,22 @@ export class DatabaseService {
     const supabase = getSupabaseClient();
     
     try {
+      // Sanitize inputs
+      const sanitizedData = {
+        id: reportData.id,
+        reporter_address: sanitizeInput(reportData.reporter),
+        report_type: sanitizeInput(reportData.reportType),
+        target: sanitizeInput(reportData.target),
+        ipfs_hash: sanitizeInput(reportData.ipfsHash),
+        status: sanitizeInput(reportData.status),
+        votes_for: reportData.votesFor,
+        votes_against: reportData.votesAgainst,
+      };
+      
       // In a real implementation, this would query the database
       // For now, we'll return mock data but structured properly
       const mockData = {
-        id: reportData.id,
-        reporter_address: reportData.reporter,
-        report_type: reportData.reportType,
-        target: reportData.target,
-        ipfs_hash: reportData.ipfsHash,
-        status: reportData.status,
-        votes_for: reportData.votesFor,
-        votes_against: reportData.votesAgainst,
+        ...sanitizedData,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
@@ -45,6 +51,9 @@ export class DatabaseService {
     const supabase = getSupabaseClient();
     
     try {
+      // Sanitize input
+      const sanitizedTarget = sanitizeInput(target);
+      
       // In a real implementation, this would query the database
       // For now, we'll return mock data
       const mockData = [
@@ -52,7 +61,7 @@ export class DatabaseService {
           id: 1,
           reporter_address: '0x1234...5678',
           report_type: 'URL',
-          target: target,
+          target: sanitizedTarget,
           ipfs_hash: 'QmHash123',
           status: 'VALIDATED',
           votes_for: 5,
@@ -62,7 +71,7 @@ export class DatabaseService {
         }
       ];
       
-      console.log('Checking target:', target);
+      console.log('Checking target:', sanitizedTarget);
       return mockData;
     } catch (error) {
       console.error('Error checking target:', error);
@@ -74,6 +83,9 @@ export class DatabaseService {
     const supabase = getSupabaseClient();
     
     try {
+      // Sanitize input
+      const sanitizedStatus = sanitizeInput(status);
+      
       // In a real implementation, this would query the database
       // For now, we'll return mock data
       const mockData = [
@@ -83,7 +95,7 @@ export class DatabaseService {
           report_type: 'URL',
           target: 'https://fake-site.com',
           ipfs_hash: 'QmHash123',
-          status: status,
+          status: sanitizedStatus,
           votes_for: 5,
           votes_against: 1,
           created_at: new Date(Date.now() - 86400000).toISOString(),
@@ -95,7 +107,7 @@ export class DatabaseService {
           report_type: 'WALLET',
           target: '0xabcdef1234567890abcdef1234567890abcdef12',
           ipfs_hash: 'QmHash456',
-          status: status,
+          status: sanitizedStatus,
           votes_for: 3,
           votes_against: 2,
           created_at: new Date(Date.now() - 172800000).toISOString(),
@@ -103,7 +115,7 @@ export class DatabaseService {
         }
       ];
       
-      console.log('Getting reports by status:', status);
+      console.log('Getting reports by status:', sanitizedStatus);
       return mockData;
     } catch (error) {
       console.error('Error getting reports by status:', error);

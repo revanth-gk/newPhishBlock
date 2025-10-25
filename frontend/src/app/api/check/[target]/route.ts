@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { DatabaseService } from '@/lib/database';
+import { rateLimit, sanitizeInput } from '@/lib/security';
 
 export async function GET(
   request: Request,
@@ -15,7 +16,19 @@ export async function GET(
       );
     }
 
-    const reports = await DatabaseService.checkTarget(target);
+    // Apply rate limiting
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    if (!rateLimit(`check-${ip}`, 30)) {
+      return NextResponse.json(
+        { message: 'Rate limit exceeded' },
+        { status: 429 }
+      );
+    }
+    
+    // Sanitize input
+    const sanitizedTarget = sanitizeInput(target);
+
+    const reports = await DatabaseService.checkTarget(sanitizedTarget);
     
     return NextResponse.json({
       isMalicious: reports.length > 0,

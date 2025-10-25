@@ -24,6 +24,34 @@ export function ReportForm() {
   
   const { address } = useAccount();
 
+  // Validation functions
+  const validateURL = (url: string): boolean => {
+    try {
+      // Check if it starts with http or https
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return false;
+      }
+      
+      // Basic URL validation
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const validateWalletAddress = (address: string): boolean => {
+    // Check if it's a valid Ethereum address format
+    const walletRegex = /^0x[a-fA-F0-9]{40}$/;
+    return walletRegex.test(address);
+  };
+
+  const validateIPFSHash = (hash: string): boolean => {
+    // Basic IPFS hash validation (CIDv0)
+    const ipfsRegex = /^Qm[1-9A-HJ-NP-Za-km-z]{44}$/;
+    return ipfsRegex.test(hash);
+  };
+
   const uploadToIPFS = async (data: any) => {
     // In a real implementation, you would use a real Web3.Storage token
     // For now, we'll simulate the upload
@@ -36,6 +64,22 @@ export function ReportForm() {
     
     if (!address) {
       setSubmitError('Please connect your wallet');
+      return;
+    }
+
+    // Client-side validation
+    if (formData.reportType === 'URL' && !validateURL(formData.target)) {
+      setSubmitError('Please enter a valid URL starting with http:// or https://');
+      return;
+    }
+
+    if (formData.reportType === 'WALLET' && !validateWalletAddress(formData.target)) {
+      setSubmitError('Please enter a valid Ethereum wallet address');
+      return;
+    }
+
+    if (formData.description.trim().length < 10) {
+      setSubmitError('Description must be at least 10 characters long');
       return;
     }
 
@@ -55,6 +99,12 @@ export function ReportForm() {
       };
       
       const ipfsHash = await uploadToIPFS(reportData);
+      
+      // Validate IPFS hash
+      if (!validateIPFSHash(ipfsHash)) {
+        throw new Error('Invalid IPFS hash generated');
+      }
+      
       console.log('Report submitted with IPFS hash:', ipfsHash);
       
       // In a real implementation, you would call the smart contract here
@@ -156,6 +206,12 @@ export function ReportForm() {
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             required
           />
+          {formData.reportType === 'URL' && formData.target && !validateURL(formData.target) && (
+            <p className="mt-1 text-sm text-red-600">Please enter a valid URL starting with http:// or https://</p>
+          )}
+          {formData.reportType === 'WALLET' && formData.target && !validateWalletAddress(formData.target) && (
+            <p className="mt-1 text-sm text-red-600">Please enter a valid Ethereum wallet address (0x...)</p>
+          )}
         </div>
 
         <div>
@@ -171,6 +227,9 @@ export function ReportForm() {
             placeholder="Describe the phishing attempt or scam..."
             required
           />
+          {formData.description && formData.description.trim().length < 10 && (
+            <p className="mt-1 text-sm text-red-600">Description must be at least 10 characters long</p>
+          )}
         </div>
 
         <div>
