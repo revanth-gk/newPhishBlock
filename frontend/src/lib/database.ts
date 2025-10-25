@@ -199,4 +199,46 @@ export class DatabaseService {
       throw error;
     }
   }
+
+  static async getReportsByUser(userAddress: string) {
+    try {
+      // Sanitize input
+      const sanitizedAddress = sanitizeInput(userAddress);
+      
+      // In a real implementation, this would query the database
+      // For now, we'll return mock data
+      const mockData = [
+        {
+          id: 1,
+          reporter_address: sanitizedAddress,
+          report_type: 'URL',
+          target: 'https://fake-site.com',
+          ipfs_hash: 'QmHash123',
+          status: 'VALIDATED',
+          votes_for: 5,
+          votes_against: 1,
+          created_at: new Date(Date.now() - 86400000).toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        {
+          id: 2,
+          reporter_address: sanitizedAddress,
+          report_type: 'WALLET',
+          target: '0xabcdef1234567890abcdef1234567890abcdef12',
+          ipfs_hash: 'QmHash456',
+          status: 'PENDING',
+          votes_for: 2,
+          votes_against: 1,
+          created_at: new Date(Date.now() - 172800000).toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+      ];
+      
+      console.log('Getting reports by user:', sanitizedAddress);
+      return mockData;
+    } catch (error) {
+      console.error('Error getting reports by user:', error);
+      throw error;
+    }
+  }
 }

@@ -7,6 +7,7 @@ import { ConnectWallet } from '@/components/ConnectWallet';
 const navigation = [
   { name: 'Dashboard', href: '/' },
   { name: 'Submit Report', href: '/submit' },
+  { name: 'My Reports', href: '/my-reports' },
   { name: 'Validate', href: '/validate' },
   { name: 'Reports', href: '/reports' },
   { name: 'Quick Check', href: '/check' },
@@ -49,7 +50,7 @@ export function NavBar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu */};
       <div className="sm:hidden">
         <div className="pt-2 pb-3 space-y-1">
           {navigation.map((item) => (

@@ -29,7 +29,7 @@ describe("PhishBlock", function () {
       await expect(phishBlock.connect(reporter).submitReport(
         "URL",
         "https://malicious-site.com",
-        "QmHash123"
+        "QmWmyoMoctfbAaiEs65a7i6wrCJYLqJgu4rK9at2bCdXV8"
       )).to.emit(phishBlock, "ReportSubmitted")
         .withArgs(1, reporter.address, "https://malicious-site.com");
       
@@ -40,7 +40,7 @@ describe("PhishBlock", function () {
       await expect(phishBlock.connect(reporter).submitReport(
         "INVALID",
         "https://malicious-site.com",
-        "QmHash123"
+        "QmWmyoMoctfbAaiEs65a7i6wrCJYLqJgu4rK9at2bCdXV8"
       )).to.be.revertedWith("Invalid report type");
     });
 
@@ -48,7 +48,7 @@ describe("PhishBlock", function () {
       await expect(phishBlock.connect(reporter).submitReport(
         "URL",
         "",
-        "QmHash123"
+        "QmWmyoMoctfbAaiEs65a7i6wrCJYLqJgu4rK9at2bCdXV8"
       )).to.be.revertedWith("Target cannot be empty");
     });
   });
@@ -86,7 +86,7 @@ describe("PhishBlock", function () {
       await phishBlock.connect(reporter).submitReport(
         "URL",
         "https://malicious-site.com",
-        "QmHash123"
+        "QmWmyoMoctfbAaiEs65a7i6wrCJYLqJgu4rK9at2bCdXV8"
       );
     });
 
@@ -134,13 +134,13 @@ describe("PhishBlock", function () {
       await phishBlock.connect(reporter).submitReport(
         "URL",
         "https://malicious-site.com",
-        "QmHash123"
+        "QmWmyoMoctfbAaiEs65a7i6wrCJYLqJgu4rK9at2bCdXV8"
       );
       
       await phishBlock.connect(reporter).submitReport(
         "WALLET",
         "0x1234567890123456789012345678901234567890",
-        "QmHash456"
+        "QmHash45678901234567890123456789012345678901"
       );
     });
 

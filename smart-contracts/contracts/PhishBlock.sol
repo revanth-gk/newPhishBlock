@@ -77,22 +77,42 @@ contract PhishBlock {
         // Additional validation for URL format
         if (keccak256(abi.encodePacked(_reportType)) == keccak256(abi.encodePacked("URL"))) {
             require(bytes(_target).length > 4, "URL too short");
-            require(
-                keccak256(abi.encodePacked(_target[0], _target[1], _target[2], _target[3])) == keccak256(abi.encodePacked("h", "t", "t", "p")) ||
-                keccak256(abi.encodePacked(_target[0], _target[1], _target[2], _target[3], _target[4])) == keccak256(abi.encodePacked("h", "t", "t", "p", "s")),
-                "Invalid URL format"
-            );
+            // Check if URL starts with "http://" or "https://"
+            bytes memory targetBytes = bytes(_target);
+            if (targetBytes.length >= 4) {
+                bytes4 prefix = bytes4(keccak256(abi.encodePacked("http")));
+                bytes4 targetPrefix = bytes4(keccak256(abi.encodePacked(
+                    string(abi.encodePacked(targetBytes[0], targetBytes[1], targetBytes[2], targetBytes[3]))
+                )));
+                
+                bytes5 httpsPrefix = bytes5(keccak256(abi.encodePacked("https")));
+                bytes5 targetHttpsPrefix = bytes5(keccak256(abi.encodePacked(
+                    string(abi.encodePacked(targetBytes[0], targetBytes[1], targetBytes[2], targetBytes[3], targetBytes[4]))
+                )));
+                
+                require(
+                    targetPrefix == prefix || targetHttpsPrefix == httpsPrefix,
+                    "Invalid URL format"
+                );
+            }
         }
         
         // Additional validation for wallet address format
         if (keccak256(abi.encodePacked(_reportType)) == keccak256(abi.encodePacked("WALLET"))) {
             require(bytes(_target).length == 42, "Invalid wallet address length");
-            require(_target[0] == "0" && _target[1] == "x", "Invalid wallet address format");
+            // Check if wallet address starts with "0x"
+            bytes memory targetBytes = bytes(_target);
+            if (targetBytes.length >= 2) {
+                require(targetBytes[0] == "0" && targetBytes[1] == "x", "Invalid wallet address format");
+            }
         }
         
         // Validate IPFS hash format (should start with Qm and be of appropriate length)
         require(bytes(_ipfsHash).length > 40 && bytes(_ipfsHash).length < 50, "Invalid IPFS hash length");
-        require(_ipfsHash[0] == "Q" && _ipfsHash[1] == "m", "Invalid IPFS hash format");
+        bytes memory ipfsHashBytes = bytes(_ipfsHash);
+        if (ipfsHashBytes.length >= 2) {
+            require(ipfsHashBytes[0] == "Q" && ipfsHashBytes[1] == "m", "Invalid IPFS hash format");
+        }
         
         reportCount++;
         

@@ -4,26 +4,49 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
+  --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: rgb(var(--background-start-rgb));
+}
+
+/* Force light theme and block Dark Reader */
+html, body {
+  background: white !important;
+  color: black !important;
+}
+
+html {
+  filter: none !important;
+  transition: none !important;
+}
+
+body {
+  filter: none !important;
+  transition: none !important;
+}
+
+* {
+  filter: none !important;
+  transition: none !important;
+}
+
+/* Block Dark Reader extensions */
+[data-darkreader-mode] {
+  filter: none !important;
+  transition: none !important;
+}
+
+[data-darkreader-scheme] {
+  filter: none !important;
+  transition: none !important;
+}
+
+.darkreader {
+  display: none !important;
 }
 
 /* RainbowKit ConnectButton customization for proper icon alignment */

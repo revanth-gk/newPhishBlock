@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
-// Web3Storage is deprecated, using a mock implementation instead
+import { getIPFSClient } from '@/lib/ipfs';
 
 interface ReportFormData {
   reportType: 'URL' | 'WALLET';
@@ -53,10 +53,14 @@ export function ReportForm() {
   };
 
   const uploadToIPFS = async (data: any) => {
-    // In a real implementation, you would use a real Web3.Storage token
-    // For now, we'll simulate the upload
-    console.log('Uploading to IPFS:', data);
-    return 'QmHash123'; // Simulated IPFS hash
+    try {
+      const ipfsClient = getIPFSClient();
+      const cid = await ipfsClient.uploadJSON(data);
+      return cid;
+    } catch (error: any) {
+      console.error('Error uploading to IPFS:', error);
+      throw new Error(`Failed to upload to IPFS: ${error.message || 'Unknown error'}`);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -191,7 +195,7 @@ export function ReportForm() {
             name="reportType"
             value={formData.reportType}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white text-gray-900"
           >
             <option value="URL">Phishing URL</option>
             <option value="WALLET">Scam Wallet</option>
@@ -208,7 +212,7 @@ export function ReportForm() {
             value={formData.target}
             onChange={handleChange}
             placeholder={formData.reportType === 'URL' ? 'https://...' : '0x...'}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white text-gray-900"
             required
           />
           {formData.reportType === 'URL' && formData.target && !validateURL(formData.target) && (
@@ -228,7 +232,7 @@ export function ReportForm() {
             value={formData.description}
             onChange={handleChange}
             rows={4}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white text-gray-900"
             placeholder="Describe the phishing attempt or scam..."
             required
           />
@@ -246,7 +250,7 @@ export function ReportForm() {
             value={formData.evidence}
             onChange={handleChange}
             rows={3}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white text-gray-900"
             placeholder="Any additional evidence or proof (screenshots, transaction IDs, etc.)..."
           />
         </div>

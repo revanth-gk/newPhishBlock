@@ -18,12 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <head />
-      <body className={`${inter.className} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="color-scheme" content="light" />
+      </head>
+      <body className={`${inter.className} antialiased bg-white text-black`}>
         <Suspense fallback={<div>Loading...</div>}>
           <Web3Provider>
-            <div className="min-h-screen bg-white">
+            <div className="min-h-screen bg-white text-black">
               <NavBar />
               <div className="py-10">
                 <main>

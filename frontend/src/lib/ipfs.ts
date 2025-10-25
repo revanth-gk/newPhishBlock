@@ -15,7 +15,8 @@ export class IPFSClient {
       console.log('Uploading to IPFS:', data);
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      return 'QmMockCID1234567890abcdefghijklmnopqrstuvwxyz';
+      // Return a proper CIDv0 format hash (46 characters, starts with Qm)
+      return 'QmWmyoMoctfbAaiEs65a7i6wrCJYLqJgu4rK9at2bCdXV8';
     } catch (error: any) {
       console.error('Error uploading to IPFS:', error);
       throw new Error(`Failed to upload to IPFS: ${error.message || 'Unknown error'}`);
@@ -29,7 +30,8 @@ export class IPFSClient {
       console.log('Uploading file to IPFS:', file.name);
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 1000));
-      return 'QmMockFileCID1234567890abcdefghijklmnopqrstuvwxyz';
+      // Return a proper CIDv0 format hash (46 characters, starts with Qm)
+      return 'QmHash45678901234567890123456789012345678901';
     } catch (error: any) {
       console.error('Error uploading file to IPFS:', error);
       throw new Error(`Failed to upload file to IPFS: ${error.message || 'Unknown error'}`);

@@ -18,12 +18,21 @@ const config = getDefaultConfig({
   ssr: true,
 });
 
-const queryClient = new QueryClient();
+let queryClient: QueryClient | null = null;
+
+function getQueryClient() {
+  if (!queryClient) {
+    queryClient = new QueryClient();
+  }
+  return queryClient;
+}
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
+  const client = getQueryClient();
+  
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={client}>
         <RainbowKitProvider>
           {children}
         </RainbowKitProvider>
