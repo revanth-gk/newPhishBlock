@@ -1,0 +1,42 @@
+{
+  "name": "phishblock",
+  "version": "1.0.0",
+  "description": "A decentralized community-driven phishing detection platform",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "smart-contracts"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=frontend",
+    "dev:contracts": "npm run dev --workspace=smart-contracts",
+    "build": "npm run build --workspace=frontend",
+    "build:contracts": "npm run build --workspace=smart-contracts",
+    "test": "npm run test --workspace=smart-contracts",
+    "deploy": "npm run deploy --workspace=smart-contracts",
+    "lint": "npm run lint --workspace=frontend && npm run lint --workspace=smart-contracts"
+  },
+  "keywords": [
+    "phishing",
+    "blockchain",
+    "ethereum",
+    "web3",
+    "security"
+  ],
+  "author": "PhishBlock Team",
+  "license": "MIT",
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.9",
+    "@supabase/supabase-js": "^2.76.1",
+    "@types/node": "^24.9.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "next": "^16.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3",
+    "viem": "^2.38.4",
+    "wagmi": "^2.18.2",
+    "web3.storage": "^4.5.5"
+  }
+}
