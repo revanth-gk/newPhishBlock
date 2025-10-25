@@ -25,3 +25,38 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* RainbowKit ConnectButton customization for proper icon alignment */
+.rk-connect-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.rk-connect-button > div {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.rk-connect-button svg {
+  display: inline-block !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+}
+
+.rk-account-button {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.rk-account-button > div {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.rk-chain-button {
+  display: flex !important;
+  align-items: center !important;
+}

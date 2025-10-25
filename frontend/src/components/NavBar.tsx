@@ -42,7 +42,9 @@ export function NavBar() {
             </div>
           </div>
           <div className="flex items-center">
-            <ConnectWallet />
+            <div className="flex-shrink-0">
+              <ConnectWallet />
+            </div>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Web3Provider } from '@/providers/Web3Provider';
 import { NavBar } from '@/components/NavBar';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,17 +19,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Web3Provider>
-          <div className="min-h-full">
-            <NavBar />
-            <div className="py-10">
-              <main>
-                {children}
-              </main>
+      <head />
+      <body className={`${inter.className} antialiased`}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Web3Provider>
+            <div className="min-h-screen bg-white">
+              <NavBar />
+              <div className="py-10">
+                <main>
+                  {children}
+                </main>
+              </div>
             </div>
-          </div>
-        </Web3Provider>
+          </Web3Provider>
+        </Suspense>
       </body>
     </html>
   );
